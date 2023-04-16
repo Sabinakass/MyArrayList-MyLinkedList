@@ -1,11 +1,11 @@
 import java.util.Iterator;
 
-public class MyLinkedList<T> implements MyList<T>{
-    private MyNode head;
-    private MyNode tail;
+public class MyLinkedList<T extends Comparable<T>> implements MyList<T>{// T extending Comparable let us compare this Ts
+    private MyNode head;//reference to first elem
+    private MyNode tail;//reference to last elem
     private int size;
 
-    private class MyNode {
+    private class MyNode {//class MyNode which keeps reference to prev, next and some data
         T data;
         MyNode prev;
         MyNode next;
@@ -14,7 +14,7 @@ public class MyLinkedList<T> implements MyList<T>{
             this.data = data;
         }
     }
-    public void addFirst(T item){
+    public void addFirst(T item){//Adds node at first position by changing references
         MyNode newNode=new MyNode(item);
         if(head==null){
             head=tail=newNode;
@@ -26,7 +26,7 @@ public class MyLinkedList<T> implements MyList<T>{
         }
         size++;
     }
-    public void addLast(T item){
+    public void addLast(T item){//Adds node at last position by changing references
         MyNode newNode=new MyNode(item);
         if(tail==null){
             head=tail=newNode;
@@ -39,12 +39,12 @@ public class MyLinkedList<T> implements MyList<T>{
         size++;
     }
     @Override
-    public void add(T item) {
+    public void add(T item) {//Adds node to the end by calling addLast method
         addLast(item);
     }
 
     @Override
-    public void add(T item, int index) {
+    public void add(T item, int index) {//Adds node at certain position with usage of Binary Sort and changing references
         if(index<0||index>size){
             throw new IndexOutOfBoundsException("Oops! Given index is not appropriate for inserting! Try again!");
         }
@@ -76,7 +76,7 @@ public class MyLinkedList<T> implements MyList<T>{
         size++;
     }
 
-    public void removeFirst(){
+    public void removeFirst(){// Removes first node by changing references
         if(head==null){
             throw new IndexOutOfBoundsException("LinkedList is empty");
         }
@@ -90,7 +90,7 @@ public class MyLinkedList<T> implements MyList<T>{
         }
         size--;
     }
-    public void removeLast(){
+    public void removeLast(){// Removes last node by changing references
         if(tail==null){
             throw new IndexOutOfBoundsException("LinkedList is empty");
         }
@@ -105,7 +105,7 @@ public class MyLinkedList<T> implements MyList<T>{
         size--;
     }
     @Override
-    public boolean remove(T item) {
+    public boolean remove(T item) {//checks success of removal
         if(indexOf(item)!=-1){
             remove(indexOf(item));
             return true;
@@ -114,9 +114,9 @@ public class MyLinkedList<T> implements MyList<T>{
     }
 
     @Override
-    public T remove(int index) {
+    public T remove(int index) {//Removes node at certain position with usage of Binary Sort and changing references
         if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("Oops! Given index is not appropriate for deleting! Try again!");
         }
 
         MyNode current;
@@ -149,26 +149,26 @@ public class MyLinkedList<T> implements MyList<T>{
     }
 
     @Override
-    public int size() {
+    public int size() {// returns size of MyLinkedList
         return size;
     }
 
     @Override
-    public void clear() {
+    public void clear() {//clears MyLinked List by nulling head and tail references
         head =null;
         tail=null;
         size=0;
     }
 
     @Override
-    public boolean contains(Object o) {
+    public boolean contains(Object o) {//returns true if result of indexOf method is not -1, which means there is no such element
         return indexOf(o)!=-1;
     }
 
     @Override
-    public T get(int index) {
+    public T get(int index) {// returns node's data with usage of Binary search
         if(index<0||index>size){
-            throw new IndexOutOfBoundsException("Oops! Given index is not appropriate for inserting! Try again!");
+            throw new IndexOutOfBoundsException("Oops! Given index is not appropriate for getting! Try again!");
         }
         MyNode current;
         if (index < size / 2) {
@@ -189,7 +189,7 @@ public class MyLinkedList<T> implements MyList<T>{
 
 
     @Override
-    public int indexOf(Object o) {
+    public int indexOf(Object o) {//returns index of element if no such returns -1
         int index=0;
         MyNode temp=head;
         while(temp.next!=null){
@@ -203,7 +203,7 @@ public class MyLinkedList<T> implements MyList<T>{
     }
 
     @Override
-    public int lastIndexOf(Object o) {
+    public int lastIndexOf(Object o) {//returns last index of element if no such returns -1
         int index=size-1;
         MyNode temp=tail;
         while(temp.prev!=null){
@@ -217,12 +217,38 @@ public class MyLinkedList<T> implements MyList<T>{
     }
 
     @Override
-    public void sort() {
-
+    public void sort() {// Bubble sort in ascending order of MyLinked List
+        boolean sorted = false;
+        while (!sorted) {
+            sorted = true;
+            MyNode curr = head;
+            while (curr.next != null) {
+                if (curr.data.compareTo(curr.next.data) > 0) {
+                    MyNode temp = curr.next;
+                    curr.next = temp.next;
+                    if (temp.next != null) {
+                        temp.next.prev = curr;
+                    }
+                    temp.prev = curr.prev;
+                    if (curr.prev != null) {
+                        curr.prev.next = temp;
+                    } else {
+                        head = temp;
+                    }
+                    curr.prev = temp;
+                    temp.next = curr;
+                    curr = temp;
+                    sorted = false;
+                }
+                else {
+                    curr = curr.next;
+                }
+            }
+        }
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<T> iterator() {// Enables usage of foreach in MyLinkedList
         return new MyIterator();
     }
     private class MyIterator implements Iterator<T> {
