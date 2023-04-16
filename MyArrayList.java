@@ -1,6 +1,6 @@
 import java.util.Iterator;
 
-public class MyArrayList<T> implements MyList<T> {
+public class MyArrayList<T extends Comparable<T>> implements MyList<T> {
     private int size;
     private Object[] arr;
 
@@ -19,6 +19,7 @@ public class MyArrayList<T> implements MyList<T> {
         }
         arr=temp;
     }
+
 
     @Override
     public void add(T item) {
@@ -80,12 +81,7 @@ public class MyArrayList<T> implements MyList<T> {
 
     @Override
     public boolean contains(Object o) {
-        for(int i=0;i<size;i++){
-            if(arr[i].equals(o)){
-                return true;
-            }
-        }
-        return false;
+        return indexOf(o)!=-1;
     }
 
     @Override
@@ -118,7 +114,23 @@ public class MyArrayList<T> implements MyList<T> {
 
     @Override
     public void sort() {
-
+        boolean swapped = true;
+        int n = size;
+        while (swapped) {
+            swapped = false;
+            for (int i = 1; i < n; i++) {
+                if (((T) arr[i - 1]).compareTo((T) arr[i]) > 0) {
+                    swap(i - 1, i);
+                    swapped = true;
+                }
+            }
+            n--;
+        }
+    }
+    private void swap(int i, int j) {
+        Object temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
 
     @Override
